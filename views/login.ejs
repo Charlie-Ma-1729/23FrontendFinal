@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-tw">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style>
+        #top {
+            margin: 1% 30%;
+            text-align: center;
+            font-family: "Audiowide", sans-serif;
+        }
+
+        #bg {
+            margin: 1% 30%;
+            padding: 2%;
+            background-color: #EEEEEE;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            font-family: "Audiowide", sans-serif;
+        }
+
+        img {
+            margin: 1% 30%;
+            width: 40%;
+        }
+
+        .mmmd {
+            margin: 1% 25%;
+            width: 50%;
+            border-radius: 5px;
+            font-size: 20px;
+            border: solid #BBBBBB;
+            font-family: "Audiowide", sans-serif;
+        }
+
+        .bbbtn {
+            margin: 2% 30%;
+            width: 40%;
+            border-radius: 5px;
+            font-size: 16px;
+            padding: 10px;
+            background-color: blue;
+            color: white;
+            font-weight: bold;
+            font-family: "Audiowide", sans-serif;
+        }
+
+        .bbbtm {
+            background-color: cyan;
+            color: black;
+        }
+
+        img {
+            border-radius: 200px;
+        }
+    </style>
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
+    <title>登入</title>
+</head>
+
+<body>
+    <div id="top">
+        <h1>Login</h1>
+        <p>Please enter your Username and Password</p>
+      </div>
+      <div id="bg">
+        <form action="/login" method="post">
+          <img src="https://static.vecteezy.com/system/resources/thumbnails/004/511/281/small/default-avatar-photo-placeholder-profile-picture-vector.jpg">
+          <input class="mmmd" type="text" name="username" placeholder="Username">
+          <br>
+          <input class="mmmd" type="password" name="password" placeholder="Password">
+          <br>
+          <input class="bbbtn" type="submit" value="Login">
+        </form>
+      </div>
+</body>
+<script>
+    $(".bbbtn").hover( function(){
+        $(".bbbtn").toggleClass("bbbtm");
+    });
+</script>
+</html>

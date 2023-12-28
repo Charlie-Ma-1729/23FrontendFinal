@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>發文頁面</title>
+</head>
+<body>
+    <form action="/announce" method="post" enctype="multipart/form-data">
+        <label>標題</label>
+        <input type="text" name="title" required="required">
+        <label>類別</label>
+        <select name="category" required="required">
+            <option value="營隊資訊">營隊資訊</option>
+            <option value="合作項目">合作項目</option>
+            <option value="活動公告">活動公告</option>
+            <option value="比賽公告">比賽公告</option>
+            <option value="其他公告">其他公告</option>
+          </select>
+        <br>
+        <label>關鍵字(半形逗號隔開，至多五個)</label>
+        <input type="text" name="keywords" required="required">
+        <br>
+        <label>描述(至多75個全形字)</label>
+        <textarea name="description"></textarea>
+        <br>
+        <label>內文</label>
+        <br>
+        <input type="file" name="announcement" accept=".md" required="required">
+        <input type="submit">
+    </form>
+</body>
+</html>

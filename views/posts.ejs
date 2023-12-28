@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../assets/dist/css/bootstrap-grid.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <title>後端系統</title>
+</head>
+<style>
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td,
+  th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+
+  .tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+  }
+
+  /* Style the buttons that are used to open the tab content */
+  .tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+  }
+
+  /* Change background color of buttons on hover */
+  .tab button:hover {
+    background-color: #ddd;
+  }
+
+  /* Create an active/current tablink class */
+  .tab button.active {
+    background-color: #ccc;
+  }
+
+  /* Style the tab content */
+  .tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+</style>
+
+<body>
+
+  
+    <h1 style="float: left;">公告</h1>
+    <h1 style="float: right;"><a href="/announcepage"><button>New Announcement</button></a></h1>
+    <table id="DCt">
+      <thead>
+        <tr>
+          <th>標題</th>
+          <th>類別</th>
+          <th>發文時間</th>
+          <th>內文</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(let i=adlength-1 ; i>=0 ; i--){%>
+          <tr>
+            <td>
+              <%= adata[i]["title"] %>
+            </td>
+            <td>
+              <%= adata[i]["category"] %>
+            </td>
+            <td>
+              <%= adata[i]["date"] %>
+            </td>
+            <td><a href="/adata/<%=adata[i]["randomid"]%>">內文</a></td>
+          </tr>
+          <%}%>
+      </tbody>
+    </table>
+    <div class='pagination-container'>
+      <nav>
+        <ul class="pagination pagination6">
+
+          <li data-page="prev">
+            <span>
+              < <span class="sr-only">(current)
+            </span></span>
+          </li>
+          <!--	Here the JS Function Will Add the Rows -->
+          <li data-page="next" id="prev">
+            <span> > <span class="sr-only">(current)</span></span>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <h3 style="margin-top: 0;">選取檢視的篇數</h3>
+    <div class="form-group">
+      <!--		Show Numbers Of Rows 		-->
+      <select class="form-control" name="state" style="margin-top:0;padding-top: 0;" id="maxRows">
+        <option value="5000">檢視全部</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="70">70</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+  
+
+
+
+
+</body>
+<script>
+  function openCity(evt, cityName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+</script>
+<script>
+  // Get the element with id="defaultOpen" and click on it
+  document.getElementById("defaultOpen").click();
+</script>
+<script src="/assets/tableScriptAnnounce.js"></script>
+
+</html>

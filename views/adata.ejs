@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="module" src="../node_modules/zero-md/dist/zero-md.min.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [
+                    ['$', '$'],
+                    ['\\(', '\\)']
+                ]
+            }
+        }
+    </script>
+    <script async src="https://cdn.jsdelivr.net/gh/zerodevx/zero-md@1/src/zero-md.min.js"></script>
+    <title>公告:<%=data.title%>
+    </title>
+</head>
+<style>
+    a.round {
+        text-decoration: none;
+        display: inline-block;
+        padding: 8px 16px;
+    }
+
+    a.round:hover {
+        background-color: #ddd;
+        color: black;
+    }
+
+    .edit {
+        background-color: #5aa1fe;
+        color: black;
+    }
+
+    .download {
+        background-color: #00ff22;
+        color: black;
+    }
+
+    .delete {
+        background-color: #ff0000;
+        color: white;
+    }
+
+    .round {
+        border-radius: 50%;
+    }
+</style>
+
+<body>
+    <a href="/adownload/<%=data.randomid%>" class="download round">下載md檔案</a>
+    <a href="/aedit/<%=data.randomid%>" class="edit round">編輯</a>
+    <a href="#" onclick="del()" class="delete round">刪除</a>
+    <h1>標題:<%=data.title%>
+    </h1>
+    <h3>類別:<%=data.category%>
+    </h3>
+    <zero-md id="announcement" src="/announcements/<%=data.randomid%>.md" no-shadow></zero-md>
+</body>
+<script>
+    function del (){
+        if (confirm('確定要刪除這則公告嗎?')) {
+            window.location.href = "/adelete/<%=data.randomid%>";
+        }
+    }
+</script>
+<script>
+    announcement.addEventListener('zero-md-rendered', () => {
+        let el = document.createElement('script')
+        el.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js'
+        document.head.appendChild(el)
+    })
+</script>
+</html>
