@@ -80,7 +80,7 @@
     <a href="/bdelete/<%=data.randomid%>" style="text-decoration: none;color: #fff;">刪除該書</a>
     <form action="/bedit/<%=data.randomid%>" method="post">
         <label>ISBN碼</label>
-        <input type="number" name="isbn" required="required" value="<%= data.isbn %>">
+        <input type="number" name="isbn" value="<%= data.isbn %>">
         <br>
         <label>書名</label>
         <input type="text" name="bookname" required="required" value="<%= data.bookname %>">
@@ -89,7 +89,7 @@
         <input type="text" name="author" required="required" value="<%= data.author %>">
         <br>
         <label>購書連結</label>
-        <input type="text" name="link" required="required" value="<%= data.link %>">
+        <input type="text" name="link" value="<%= data.link %>">
         <br>
         <label>圖片</label>
         <img id="cover" src="../../images/No Image.png" onload="standby();">

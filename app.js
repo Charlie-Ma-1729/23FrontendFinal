@@ -61,8 +61,8 @@ const BookSchema = new Schema(
         pic: {
             type: String
         },
-        link:{
-            type: String    
+        link: {
+            type: String
         }
     }
 )
@@ -79,7 +79,7 @@ const getBookData = (isbn) => {
 
             dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.type.clearfix > p.author > a:nth-child(1)').text())
             dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a > img').attr('data-src').replace('w=187&h=187', 'w=300&h=300'))
-            dataArray.push('https:'+ $('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a').attr('href'))
+            dataArray.push('https:' + $('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a').attr('href'))
             resolve(dataArray);
         })
     })
@@ -115,6 +115,10 @@ app.post('/login', (req, res) => {
         res.send('<h1>無效的登入</h1>');
     }
 });
+
+app.get('/nolink', (req, res) => {
+    res.send('<h1>連結不可用</h1>');
+})
 
 app.get('/books', function (req, res) {
     if (req.cookies.token) {
@@ -204,16 +208,24 @@ app.post('/addNew', async function (req, res) {
     let randomid = Date.now();
     let dataArray = [];
     let isbn = req.body.isbn;
-    await getBookData(isbn).then((result) => {
-        dataArray = result;
-    });
+    let link = req.body.link;
+    if (isbn) {
+        await getBookData(isbn).then((result) => {
+            dataArray = result;
+        });
+    } else {
+        dataArray[2] = '/images/No Image.png';
+    }
+    if (!link) {
+        link = '/nolink';
+    }
     const newBook = new BookData({
         bookname: req.body.title,
         author: req.body.author,
         randomid: randomid,
         isbn: req.body.isbn,
         pic: dataArray[2],
-        link: req.body.link
+        link: link
     })
     await newBook.save();
     res.redirect('books');

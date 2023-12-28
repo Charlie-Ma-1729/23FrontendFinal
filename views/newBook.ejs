@@ -77,7 +77,7 @@
     </form>
     <form action="/addNew" method="post">
         <label>ISBN碼</label>
-        <input type="number" name="isbn" required="required" value="<%= isbn %>">
+        <input type="number" name="isbn" value="<%= isbn %>">
         <br>
         <label>書名</label>
         <input type="text" name="title" required="required" value="<%= title %>">
@@ -86,7 +86,7 @@
         <input type="text" name="author" required="required" value="<%= author %>">
         <br>
         <label>購書連結</label>
-        <input type="text" name="link" required="required" value="<%= link %>">
+        <input type="text" name="link" value="<%= link %>">
         <br>
         <label>圖片</label>
         <img id="cover" src="./images/No Image.png" onload="standby();">
