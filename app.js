@@ -60,21 +60,26 @@ const BookSchema = new Schema(
         },
         pic: {
             type: String
+        },
+        link:{
+            type: String    
         }
     }
 )
 const BookData = mongoose.model('books', BookSchema)
 
 const getBookData = (isbn) => {
-    let dataArray =[];
+    let dataArray = [];
     return new Promise((resolve, reject) => {
         request.post({
             url: "https://search.books.com.tw/search/query/key/" + isbn + "/cat/BKA",
         }, function (err, res, body) {
             let $ = cheerio.load(body);
-            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div > h4 > a').text())
-            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div > div.type.clearfix > p.author > a:nth-child(1)').text())
-            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div > div.box > a > img').attr('data-src').replace('w=187&h=187', 'w=300&h=300'))
+            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > h4 > a').text())
+
+            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.type.clearfix > p.author > a:nth-child(1)').text())
+            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a > img').attr('data-src').replace('w=187&h=187', 'w=300&h=300'))
+            dataArray.push('https:'+ $('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a').attr('href'))
             resolve(dataArray);
         })
     })
@@ -104,11 +109,11 @@ app.post('/login', (req, res) => {
     if (req.body.username == process.env.ADMIN && req.body.password == process.env.PASSWORD) {
         var token = jwt.sign({ username: req.body.username }, process.env.SECRET, { expiresIn: '1h' });
         res.cookie("token", token);
+        res.redirect('books');
     }
     else {
         res.send('<h1>無效的登入</h1>');
     }
-    res.redirect('books');
 });
 
 app.get('/books', function (req, res) {
@@ -168,7 +173,8 @@ app.get('/newBook', function (req, res) {
                     title: '',
                     author: '',
                     pic: '',
-                    isbn: ''
+                    isbn: '',
+                    link: ''
                 });
             }
         })
@@ -184,11 +190,12 @@ app.post('/searchISBN', async function (req, res) {
     await getBookData(isbn).then((result) => {
         dataArray = result;
     });
-    console.log(dataArray[2]);
+    console.log(dataArray[3]);
     res.render('newBook', {
         title: dataArray[0],
         author: dataArray[1],
         pic: dataArray[2],
+        link: dataArray[3],
         isbn: isbn
     });
 });
@@ -205,7 +212,8 @@ app.post('/addNew', async function (req, res) {
         author: req.body.author,
         randomid: randomid,
         isbn: req.body.isbn,
-        pic: dataArray[2]
+        pic: dataArray[2],
+        link: req.body.link
     })
     await newBook.save();
     res.redirect('books');
@@ -242,27 +250,21 @@ app.get('/announcement/:id', async (req, res) => {
     });
 });
 
-app.post('/aedit', announce.single("announcement"), async function (req, res) {
+app.post('/bedit/:randomid', async function (req, res) {
 
-    let ofname = req.file.originalname;
-    let randomid = req.body.randomid;
-    fs.rename('./announcements/' + ofname, './announcements/' + randomid + ".md", function (err) {
-        if (err) throw err;
-        console.log('File Renamed.');
-    });
-
+    let randomid = req.params.randomid;
     let filter = { randomid: randomid };
     let update = {
-        title: req.body.title,
-        category: req.body.category,
-        keywords: req.body.keywords,
-        description: req.body.description
+        bookname: req.body.bookname,
+        author: req.body.author,
+        isbn: req.body.isbn,
+        link: req.body.link
     };
     await BookData.findOneAndUpdate(filter, update);
-    res.redirect('posts');
+    res.redirect('/books');
 });
 
-app.get('/aedit/:id', async (req, res) => {
+app.get('/bedit/:id', async (req, res) => {
     if (req.cookies.token) {
         jwt.verify(req.cookies.token, process.env.SECRET, async function (err) {
             if (err) {
@@ -273,9 +275,8 @@ app.get('/aedit/:id', async (req, res) => {
             }
             else {
                 let rid = req.params.id;
-                console.log(rid);
                 let rdata = await BookData.findOne({ randomid: rid });
-                res.render('aedit', {
+                res.render('bedit', {
                     data: rdata
                 });
             }
@@ -286,7 +287,7 @@ app.get('/aedit/:id', async (req, res) => {
     }
 });
 
-app.get('/adelete/:id', async (req, res) => {
+app.get('/bdelete/:id', async (req, res) => {
     if (req.cookies.token) {
         jwt.verify(req.cookies.token, process.env.SECRET, async function (err) {
             if (err) {
@@ -297,16 +298,12 @@ app.get('/adelete/:id', async (req, res) => {
             }
             else {
                 let rid = req.params.id;
-                fs.unlink('announcements/' + rid + '.md', (err) => {
-                    if (err) throw err;
-                    console.log('announcements/' + rid + '.md was deleted');
-                });
                 BookData.findOneAndDelete({ randomid: rid }, function (err, docs) {
                     if (err) {
                         res.send(err)
                     }
                     else {
-                        res.redirect('/posts');
+                        res.redirect('/books');
                     }
                 });
             }
@@ -317,25 +314,6 @@ app.get('/adelete/:id', async (req, res) => {
     }
 });
 
-app.get('/adownload/:id', async (req, res) => {
-    if (req.cookies.token) {
-        jwt.verify(req.cookies.token, process.env.SECRET, async function (err) {
-            if (err) {
-                console.log("token錯誤");
-                res.clearCookie('token');
-                res.send('<h1>無效的登入</h1>');
-                //token過期判斷
-            }
-            else {
-                let rid = req.params.id;
-                res.download("./announcements/" + rid + ".md");
-            }
-        })
-    }
-    else {
-        res.send('<h1>無效的登入</h1>');
-    }
-});
 
 app.get('/', async (req, res) => {
     let bdatas = await BookData.find();
