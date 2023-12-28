@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../assets/dist/css/bootstrap-grid.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <title>後端系統</title>
+</head>
+<style>
+  body {
+    font-family: '微軟正黑體', 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    margin: 20px;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+  }
+
+  button {
+    background-color: #198754;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  table {
+    font-family: '微軟正黑體', 'Arial', sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+
+  th {
+    background-color: #198754;
+    color: #fff;
+  }
+
+  tbody tr:nth-child(even) {
+    background-color: #f1f1f1;
+  }
+
+  a {
+    text-decoration: none;
+    color: #198754;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+
+<body style="background-color:#414549">
+
+  
+    <h1 style="float: left;color: white ;">書庫</h1>
+    <h1 style="float: right;"><a href="/newBook"><button>New Book</button></a></h1>
+    <table id="DCt">
+      <thead>
+        <tr>
+          <th>書名</th>
+          <th>作者</th>
+          <th>圖片</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(let i=bdlength-1 ; i>=0 ; i--){%>
+          <tr style="background-color: white;">
+            <td>
+              <%= bdata[i]["bookname"] %>
+            </td>
+            <td>
+              <%= bdata[i]["author"] %>
+            </td>
+            <td>
+              <a href="/bedit/<%=bdata[i]["randomid"]%>"><img src="<%- bdata[i]["pic"] %>"></a>
+            </td>
+          </tr>
+          <%}%>
+      </tbody>
+    </table>
+  
+
+
+
+
+</body>
+</html>

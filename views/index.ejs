@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>烏來圖書Reinforcements</title>
+  <link href="../assets/style.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <script type="module" src="../node_modules/zero-md/dist/zero-md.min.js"></script>
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <link rel="icon" href="images/icon.ico" />
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+
+    a.previous {
+      text-decoration: none;
+      display: inline-block;
+      padding: 8px 16px;
+    }
+
+    a.previous:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    .previous {
+      background-color: #f1f1f1;
+      color: black;
+    }
+
+
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td,
+    th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+
+
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+      font-size: 2rem;
+    }
+
+    /* Style the buttons that are used to open the tab content */
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+    }
+
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+      background-color: #ddd;
+    }
+
+    /* Create an active/current tablink class */
+    .tab button.active {
+      background-color: #ccc;
+    }
+
+    /* Style the tab content */
+    .tabcontent {
+      display: none;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-top: none;
+      font-size: 1.5rem;
+
+    }
+  </style>
+  <!-- Custom styles for this template -->
+</head>
+
+<body>
+  <nav class="navbar bg-dark">
+    <div class="container-fluid">
+      <h2 class="navbar-brand title">烏來圖書Reinforcements</h2>
+      <form class="d-flex" role="search">
+        <a href="/login" class="btn btn-outline-success">後臺登入</a>
+      </form>
+    </div>
+  </nav>
+  <main class="container">
+    <hr class="featurette-divider" style="margin-top: 2% ; margin-bottom:2%" />
+    <div class="row">
+      <% for(let i=dlength-1 ; i>=0 ; i--){%>
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-4 col-6">
+          <div class="card" style="background-color: none;">
+            <a href="<%= bdata[i]["link"]%>" target="_blank" style="color: black;text-decoration: none;">
+              <img src="<%- bdata[i]["pic"] %>" class="card-img-top" alt="<%= bdata[i]["bookname"] %>">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <%= bdata[i]["bookname"] %>
+                  </h5>                  
+                  <p class="card-text" style="font-size: medium;">
+                    <%= bdata[i]["author"] %>
+                  </p>
+                </div>
+            </a>
+          </div>
+        </div>
+        <%}%>
+    </div>
+
+  </main>
+
+  <footer>
+    <h5>Copyright © 2023~2024 Charlie Ma. All rights reserved.    Books from books.com.tw</h5>
+  </footer>
+</body>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var cards = document.querySelectorAll(".card");
+
+    // Add animation delay for each card
+    cards.forEach(function (card, index) {
+      card.style.animationDelay = (index + 1) * 0.1 + "s";
+    });
+  });
+</script>
+</html>

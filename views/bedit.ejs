@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>編輯:<%=data.bookname%></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head> 
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+        margin: 20px;
+    }
+
+    form {
+        max-width: 400px;
+        margin: auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 20px; /* 新增的部分 */
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 16px;
+        box-sizing: border-box;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+    }
+
+    input[type="submit"] {
+        background-color: #198754;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        margin-top: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        display: block; /* 新增的部分 */
+        margin-bottom: 10px; /* 新增的部分 */
+    }
+
+    /* 新增的部分 */
+    a {
+        display: inline-block;
+        background-color: #dc3545;
+        color: #fff;
+        padding: 8px 12px;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-bottom: 10px;
+    }
+
+    a:hover {
+        background-color: #c82333;
+        text-decoration: none;
+        color: #fff;
+    }
+</style>
+<body>
+    <a href="/bdelete/<%=data.randomid%>" style="text-decoration: none;color: #fff;">刪除該書</a>
+    <form action="/bedit/<%=data.randomid%>" method="post">
+        <label>ISBN碼</label>
+        <input type="number" name="isbn" required="required" value="<%= data.isbn %>">
+        <br>
+        <label>書名</label>
+        <input type="text" name="bookname" required="required" value="<%= data.bookname %>">
+        <br>
+        <label>作者</label>
+        <input type="text" name="author" required="required" value="<%= data.author %>">
+        <br>
+        <label>購書連結</label>
+        <input type="text" name="link" required="required" value="<%= data.link %>">
+        <br>
+        <label>圖片</label>
+        <img id="cover" src="../../images/No Image.png" onload="standby();">
+        <input type="submit">
+    </form>
+</body>
+<script>
+    function standby() {
+        if ('<%- data.pic %>') {
+            document.getElementById('cover').src = '<%- data.pic %>'
+        }
+    }
+</script>
+</html>
