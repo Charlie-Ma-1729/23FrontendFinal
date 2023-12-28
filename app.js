@@ -11,11 +11,17 @@ const fs = require('fs');
 const { config } = require('process');
 const app = express();
 dotenv.config();
+const request = require('request');
+const cheerio = require('cheerio');
+const xpath = require('xpath');
+const dom = require('@xmldom/xmldom').DOMParser;
+
 const { dirname } = require('path');
 const { FILE } = require('dns');
 const { containeranalysis_v1alpha1 } = require('googleapis');
 
 const mongoDB = process.env.DB;
+
 
 
 app.set('views', path.join(__dirname, 'views'));
@@ -40,31 +46,44 @@ mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true })
     })
 
 const Schema = mongoose.Schema;
-const AnnounceSchema = new Schema(
+const BookSchema = new Schema(
     {
-        title: {
-            type: String
-        },
         bookname: {
             type: String
         },
-        date: {
+        author: {
             type: String
         },
         randomid: {
             type: Number
         },
-        rate: {
-            tyoe: String
+        isbn: {
+            type: Number
         },
-        comment:{
+        pic: {
             type: String
         }
     }
 )
-const AnnounceData = mongoose.model('announce', AnnounceSchema)
+const BookData = mongoose.model('books', BookSchema)
 
-const announcementStorageEngine = multer.diskStorage({
+const getBookData = (isbn) => {
+    let dataArray =[];
+    return new Promise((resolve, reject) => {
+        request.post({
+            url: "https://search.books.com.tw/search/query/key/" + isbn + "/cat/BKA",
+        }, function (err, res, body) {
+            let $ = cheerio.load(body);
+            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div > h4 > a').text())
+            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div > div.type.clearfix > p.author > a:nth-child(1)').text())
+            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div > div.box > a > img').attr('data-src').replace('w=187&h=187', 'w=300&h=300'))
+            resolve(dataArray);
+        })
+    })
+}
+
+
+const BookStorageEngine = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "./announcements"); //important this is a direct path fron our current file to storage location
     },
@@ -75,7 +94,7 @@ const announcementStorageEngine = multer.diskStorage({
 
 
 
-const announce = multer({ storage: announcementStorageEngine });
+const announce = multer({ storage: BookStorageEngine });
 
 
 
@@ -91,10 +110,10 @@ app.post('/login', (req, res) => {
     else {
         res.send('<h1>無效的登入</h1>');
     }
-    res.redirect('posts');
+    res.redirect('books');
 });
 
-app.get('/posts', function (req, res) {
+app.get('/books', function (req, res) {
     if (req.cookies.token) {
         jwt.verify(req.cookies.token, process.env.SECRET, async function (err) {
             if (err) {
@@ -104,11 +123,11 @@ app.get('/posts', function (req, res) {
                 //token過期判斷
             }
             else {
-                let adatas = await AnnounceData.find();
-                let adataLength = adatas.length;
-                res.render('posts', {
-                    adlength: adataLength,
-                    adata: adatas
+                let bdatas = await BookData.find();
+                let bdataLength = bdatas.length;
+                res.render('books', {
+                    bdlength: bdataLength,
+                    bdata: bdatas
                 });
             }
         })
@@ -137,7 +156,7 @@ app.get('/postpage', function (req, res) {
     }
 });
 
-app.get('/announcepage', function (req, res) {
+app.get('/newBook', function (req, res) {
     if (req.cookies.token) {
         jwt.verify(req.cookies.token, process.env.SECRET, async function (err) {
             if (err) {
@@ -147,7 +166,12 @@ app.get('/announcepage', function (req, res) {
                 //token過期判斷
             }
             else {
-                res.render('announcepage');
+                res.render('newBook', {
+                    title: '',
+                    author: '',
+                    pic: '',
+                    isbn: ''
+                });
             }
         })
     }
@@ -156,32 +180,40 @@ app.get('/announcepage', function (req, res) {
     }
 });
 
-app.post('/announce', announce.single("announcement"), async function (req, res) {
-    let ofname = req.file.originalname;
-    let randomid = Date.now();
-    let today = new Date();
-    let dd = String(today.getDate()).padStart(2, '0');
-    let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    let yyyy = today.getFullYear();
-    let date = yyyy + "/" + mm + "/" + dd;
-    fs.rename('./announcements/' + ofname, './announcements/' + randomid + ".md", function (err) {
-        if (err) throw err;
-        console.log('File Renamed.');
+app.post('/searchISBN', async function (req, res) {
+    let isbn = req.body.isbn;
+    let dataArray = [];
+    await getBookData(isbn).then((result) => {
+        dataArray = result;
     });
-
-    const newAnnounce = new AnnounceData({
-        title: req.body.title,
-        category: req.body.category,
-        date: date,
-        randomid: randomid,
-        keywords: req.body.keywords,
-        description: req.body.description
-    })
-    await newAnnounce.save();
-    res.redirect('posts');
+    console.log(dataArray[2]);
+    res.render('newBook', {
+        title: dataArray[0],
+        author: dataArray[1],
+        pic: dataArray[2],
+        isbn: isbn
+    });
 });
 
-app.get('/adata/:id', (req, res) => {
+app.post('/addNew', async function (req, res) {
+    let randomid = Date.now();
+    let dataArray = [];
+    let isbn = req.body.isbn;
+    await getBookData(isbn).then((result) => {
+        dataArray = result;
+    });
+    const newBook = new BookData({
+        bookname: req.body.title,
+        author: req.body.author,
+        randomid: randomid,
+        isbn: req.body.isbn,
+        pic: dataArray[2]
+    })
+    await newBook.save();
+    res.redirect('books');
+});
+
+app.get('/bdata/:id', (req, res) => {
     let rid = req.params.id;
     if (req.cookies.token) {
         jwt.verify(req.cookies.token, process.env.SECRET, async function (err) {
@@ -192,8 +224,8 @@ app.get('/adata/:id', (req, res) => {
                 //token過期判斷
             }
             else {
-                let rdata = await AnnounceData.findOne({ randomid: rid });
-                res.render('adata', {
+                let rdata = await BookData.findOne({ randomid: rid });
+                res.render('bdata', {
                     data: rdata
                 });
             }
@@ -206,7 +238,7 @@ app.get('/adata/:id', (req, res) => {
 
 app.get('/announcement/:id', async (req, res) => {
     let rid = req.params.id;
-    let rdata = await AnnounceData.findOne({ randomid: rid });
+    let rdata = await BookData.findOne({ randomid: rid });
     res.render('announcement', {
         data: rdata
     });
@@ -228,7 +260,7 @@ app.post('/aedit', announce.single("announcement"), async function (req, res) {
         keywords: req.body.keywords,
         description: req.body.description
     };
-    await AnnounceData.findOneAndUpdate(filter, update);
+    await BookData.findOneAndUpdate(filter, update);
     res.redirect('posts');
 });
 
@@ -244,7 +276,7 @@ app.get('/aedit/:id', async (req, res) => {
             else {
                 let rid = req.params.id;
                 console.log(rid);
-                let rdata = await AnnounceData.findOne({ randomid: rid });
+                let rdata = await BookData.findOne({ randomid: rid });
                 res.render('aedit', {
                     data: rdata
                 });
@@ -271,7 +303,7 @@ app.get('/adelete/:id', async (req, res) => {
                     if (err) throw err;
                     console.log('announcements/' + rid + '.md was deleted');
                 });
-                AnnounceData.findOneAndDelete({ randomid: rid }, function (err, docs) {
+                BookData.findOneAndDelete({ randomid: rid }, function (err, docs) {
                     if (err) {
                         res.send(err)
                     }
@@ -308,11 +340,11 @@ app.get('/adownload/:id', async (req, res) => {
 });
 
 app.get('/announcements', async (req, res) => {
-    let adatas = await AnnounceData.find();
-    let adataLength = adatas.length;
+    let bdatas = await BookData.find();
+    let bdataLength = bdatas.length;
     res.render('announcements', {
-        data: adatas,
-        dlength: adataLength
+        data: bdatas,
+        dlength: bdataLength
     });
 })
 
