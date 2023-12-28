@@ -33,8 +33,6 @@ let vjson = {};
 app.use('/assets', express.static('assets'))
 app.use('/node_modules', express.static('node_modules'))
 app.use('/images', express.static('images'))
-app.use('/announcements', express.static('announcements'))
-app.use('/articles', express.static('articles'))
 
 
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -339,11 +337,11 @@ app.get('/adownload/:id', async (req, res) => {
     }
 });
 
-app.get('/announcements', async (req, res) => {
+app.get('/', async (req, res) => {
     let bdatas = await BookData.find();
     let bdataLength = bdatas.length;
-    res.render('announcements', {
-        data: bdatas,
+    res.render('index', {
+        bdata: bdatas,
         dlength: bdataLength
     });
 })
