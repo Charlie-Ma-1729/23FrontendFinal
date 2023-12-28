@@ -116,9 +116,9 @@ app.post('/login', (req, res) => {
     }
 });
 
-    app.get('/nolink', (req, res) => {
-        res.send('<h1>連結不可用</h1>');
-    })
+app.get('/nolink', (req, res) => {
+    res.send('<h1>連結不可用</h1>');
+})
 
 app.get('/books', function (req, res) {
     if (req.cookies.token) {
