@@ -78,26 +78,34 @@ const getBookData = (isbn) => {
             dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > h4 > a').text())
 
             dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.type.clearfix > p.author > a:nth-child(1)').text())
-            dataArray.push($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a > img').attr('data-src').replace('w=187&h=187', 'w=300&h=300'))
-            dataArray.push('https:' + $('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a').attr('href'))
+            let imageUrl = $('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a > img').attr('data-src');
+            try {
+                let replaceImage = imageUrl.replace('w=187&h=187', 'w=300&h=300');
+                dataArray.push(replaceImage);
+            } catch (err) {
+                console.error('圖片不合', err);
+                dataArray.push('/images/No Image.png');
+
+            }
+            try {
+                if ($('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a').attr('href') === undefined) {
+                    dataArray.push('none');
+                }
+                else {
+                    dataArray.push('https:' + $('#search_block_1 > div > div > div > div.table-searchbox.clearfix > div > div > div:nth-child(1) > div.box > a').attr('href'));
+                }
+
+            } catch (err) {
+
+            }
+
             resolve(dataArray);
         })
     })
 }
 
 
-const BookStorageEngine = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "./announcements"); //important this is a direct path fron our current file to storage location
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname);
-    },
-});
 
-
-
-const announce = multer({ storage: BookStorageEngine });
 
 
 
@@ -194,7 +202,6 @@ app.post('/searchISBN', async function (req, res) {
     await getBookData(isbn).then((result) => {
         dataArray = result;
     });
-    console.log(dataArray[3]);
     res.render('newBook', {
         title: dataArray[0],
         author: dataArray[1],

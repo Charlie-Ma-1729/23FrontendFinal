@@ -99,6 +99,15 @@
             document.getElementById('cover').src = '<%- pic %>'
         }
     }
+
 </script>
+
+<% if (link === 'none') { %>
+    <% link = ''%>
+    <script>
+        alert('查不到此書');
+        document.getElementsByName('link')[0].value = '';
+    </script>
+<% } %>
 
 </html>
