@@ -49,8 +49,12 @@
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+}
 
-
+.card-text {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap;
 }
 
 .card:hover{
